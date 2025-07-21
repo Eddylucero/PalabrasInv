@@ -1,0 +1,408 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registro - PalabrasInventadas</title>
+  <!-- Favicon -->
+  <link rel="shortcut icon" type="image/png" href="{% static 'plantilla/Spike/src/assets/images/logos/favicon.png' %}" />
+  
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- jQuery y validación -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  
+  <!-- Estilos personalizados -->
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #2c3e50;
+      --accent-color: #f39c12;
+      --light-color: #f8f9fc;
+      --dark-color: #5a5c69;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .register-container {
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .register-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 40px;
+      position: relative;
+    }
+    
+    .register-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .register-icon {
+      font-size: 50px;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      animation: bounce 2s infinite;
+    }
+    
+    .register-header h2 {
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .register-header p {
+      color: var(--dark-color);
+      font-size: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--secondary-color);
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
+      outline: none;
+    }
+    
+    .btn-register {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .btn-register:hover {
+      background-color: #3a5bd9;
+      transform: translateY(-2px);
+    }
+    
+    .btn-register i {
+      font-size: 18px;
+    }
+    
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--dark-color);
+      font-size: 14px;
+    }
+    
+    .login-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    
+    .login-link a:hover {
+      color: var(--secondary-color);
+      text-decoration: underline;
+    }
+    
+    .terms {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--dark-color);
+      font-size: 12px;
+    }
+    
+    .terms a {
+      color: var(--primary-color);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .terms a:hover {
+      color: var(--secondary-color);
+      text-decoration: underline;
+    }
+    
+    /* Animación de carga */
+    .loader-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Animaciones */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-15px); }
+      60% { transform: translateY(-7px); }
+    }
+    
+    /* Estilos de validación */
+    .error {
+      color: #e74c3c;
+      font-size: 14px;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .form-control.error {
+      border-color: #e74c3c;
+    }
+    
+    /* Mostrar/ocultar contraseña */
+    .password-toggle {
+      position: relative;
+    }
+    
+    .password-toggle i {
+      position: absolute;
+      right: 15px;
+      top: 42px;
+      cursor: pointer;
+      color: var(--dark-color);
+    }
+    
+    /* Responsive */
+    @media (max-width: 576px) {
+      .register-card {
+        padding: 30px 20px;
+        border-radius: 10px;
+      }
+      
+      .register-header h2 {
+        font-size: 24px;
+      }
+      
+      .register-header p {
+        font-size: 14px;
+      }
+      
+      .form-group label {
+        font-size: 14px;
+      }
+      
+      .form-control {
+        padding: 10px 12px;
+        font-size: 14px;
+      }
+      
+      .btn-register {
+        padding: 10px;
+        font-size: 15px;
+      }
+      
+      .login-link {
+        font-size: 13px;
+      }
+      
+      .terms {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenedor de carga -->
+  <div class="loader-container" id="loader">
+    <div class="loader"></div>
+  </div>
+
+  <div class="register-container">
+    <div class="register-card">
+      <div class="register-header">
+        <i class="mdi mdi-account-plus register-icon"></i>
+        <h2>Únete a PalabrasInventadas</h2>
+        <p>Crea tu cuenta para empezar a inventar palabras</p>
+      </div>
+      <form method="POST" id="formRegistro">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="usuario">Nombre de usuario</label>
+          <input type="text" name="username" id="usuario" class="form-control" placeholder="Ej: palabrero123">
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input type="email" name="email" id="email" class="form-control" placeholder="tucorreo@ejemplo.com">
+        </div>
+        
+        <div class="form-group password-toggle">
+          <label for="clave">Contraseña</label>
+          <input type="password" name="password" id="clave" class="form-control" placeholder="Mínimo 6 caracteres">
+          <i class="mdi mdi-eye-off" id="togglePassword"></i>
+        </div>
+        
+        <button type="submit" class="btn-register">
+          <i class="fa fa-user-plus"></i> Registrarme
+        </button>
+        
+        <div class="login-link">
+          ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+        </div>
+        
+        <p class="terms">Al registrarte, aceptas nuestros <a href="#">Términos de servicio</a> y <a href="#">Política de privacidad</a></p>
+      </form>
+    </div>
+  </div>
+
+    {% if messages %}
+    {% for message in messages %}
+      <script>
+        Swal.fire({
+          title: `{% if message.tags == 'success' %}Éxito{% elif message.tags == 'error' %}Error{% elif message.tags == 'warning' %}Advertencia{% else %}Mensaje{% endif %}`,
+          text: "{{ message|escapejs }}",
+          icon: "{{ message.tags|default:'info' }}",
+          confirmButtonColor: '#4e73df'
+        });
+      </script>
+    {% endfor %}
+  {% endif %}
+
+  <script>
+    // Recargar la página si viene de cache
+    if (window.performance && window.performance.navigation.type === 2) {
+      window.location.reload();
+    }
+
+    // Toggle para mostrar/ocultar contraseña
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#clave');
+    
+    togglePassword.addEventListener('click', function() {
+      const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+      password.setAttribute('type', type);
+      this.classList.toggle('mdi-eye-off');
+      this.classList.toggle('mdi-eye');
+    });
+
+    // Validación del formulario
+    $("#formRegistro").validate({
+      rules: {
+        username: {
+          required: true,
+          minlength: 3,
+          maxlength: 30
+        },
+        email: {
+          required: true,
+          email: true,
+          maxlength: 100
+        },
+        password: {
+          required: true,
+          minlength: 6,
+          maxlength: 50
+        }
+      },
+      messages: {
+        username: {
+          required: "Por favor ingresa un nombre de usuario",
+          minlength: "El usuario debe tener al menos 3 caracteres",
+          maxlength: "El usuario no puede exceder los 30 caracteres"
+        },
+        email: {
+          required: "Por favor ingresa tu correo electrónico",
+          email: "Ingresa un correo electrónico válido",
+          maxlength: "El correo no puede exceder los 100 caracteres"
+        },
+        password: {
+          required: "Por favor ingresa una contraseña",
+          minlength: "La contraseña debe tener al menos 6 caracteres",
+          maxlength: "La contraseña no puede exceder los 50 caracteres"
+        }
+      },
+      errorElement: "span",
+      errorPlacement: function(error, element) {
+        error.addClass('error');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function(element, errorClass, validClass) {
+        $(element).addClass('error');
+      },
+      unhighlight: function(element, errorClass, validClass) {
+        $(element).removeClass('error');
+      },
+      submitHandler: function(form) {
+        // Solo mostrar loader si el formulario es válido
+        $('#loader').css('display', 'flex');
+        form.submit();
+      }
+    });
+  </script>
+</body>
+</html>

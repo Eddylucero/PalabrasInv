@@ -1,0 +1,463 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nueva Contraseña - PalabrasInventadas</title>
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="{% static 'images/icono_palabra.png' %}" />
+  
+  <!-- Iconos MDI -->
+  <link rel="stylesheet" href="{% static 'plantilla/corona/template/assets/vendors/mdi/css/materialdesignicons.min.css' %}">
+  
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- jQuery y validación -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js"></script>
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+  
+  <!-- Estilos personalizados -->
+  <style>
+    :root {
+      --primary-color: #4e73df;
+      --secondary-color: #2c3e50;
+      --accent-color: #f39c12;
+      --light-color: #f8f9fc;
+      --dark-color: #5a5c69;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    
+    .password-container {
+      width: 100%;
+      max-width: 450px;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    .password-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      padding: 40px;
+      position: relative;
+    }
+    
+    .password-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .password-icon {
+      font-size: 50px;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      animation: bounce 2s infinite;
+    }
+    
+    .password-header h2 {
+      color: var(--secondary-color);
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+    
+    .password-header p {
+      color: var(--dark-color);
+      font-size: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--secondary-color);
+      font-weight: 500;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px 40px 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
+      outline: none;
+    }
+    
+    .btn-password {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      position: relative;
+    }
+    
+    .btn-password:hover {
+      background-color: #3a5bd9;
+      transform: translateY(-2px);
+    }
+    
+    .btn-password i {
+      font-size: 18px;
+    }
+    
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: var(--dark-color);
+      font-size: 14px;
+    }
+    
+    .login-link a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .login-link a:hover {
+      color: var(--secondary-color);
+      text-decoration: underline;
+    }
+    
+    /* Toggle para mostrar contraseña */
+    .password-toggle {
+      position: absolute;
+      right: 15px;
+      top: 40px;
+      cursor: pointer;
+      color: var(--dark-color);
+      z-index: 2;
+    }
+    
+    /* Animación de carga */
+    .loader-container {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loader {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    /* Animaciones */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(-15px); }
+      60% { transform: translateY(-7px); }
+    }
+    
+    /* Estilos de validación */
+    .error {
+      color: #e74c3c;
+      font-size: 14px;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    .form-control.error {
+      border-color: #e74c3c;
+    }
+    
+    /* Botón loading */
+    .btn-password.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    .btn-password .btn-text {
+      transition: opacity 0.3s;
+    }
+    
+    .btn-password.loading .btn-text {
+      opacity: 0;
+    }
+    
+    .btn-password .loader {
+      position: absolute;
+      width: 25px;
+      height: 25px;
+      border-width: 3px;
+      display: none;
+    }
+    
+    .btn-password.loading .loader {
+      display: block;
+    }
+    
+    /* Indicador de fortaleza de contraseña */
+    .password-strength {
+      height: 5px;
+      background: #eee;
+      border-radius: 3px;
+      margin-top: 5px;
+      overflow: hidden;
+    }
+    
+    .password-strength-bar {
+      height: 100%;
+      width: 0%;
+      background: #e74c3c;
+      transition: all 0.3s;
+    }
+    
+    /* Responsive */
+    @media (max-width: 576px) {
+      .password-card {
+        padding: 30px 20px;
+        border-radius: 10px;
+      }
+      
+      .password-header h2 {
+        font-size: 24px;
+      }
+      
+      .password-header p {
+        font-size: 14px;
+      }
+      
+      .form-group label {
+        font-size: 14px;
+      }
+      
+      .form-control {
+        padding: 10px 35px 10px 12px;
+        font-size: 14px;
+      }
+      
+      .password-toggle {
+        top: 38px;
+      }
+      
+      .btn-password {
+        padding: 10px;
+        font-size: 15px;
+      }
+      
+      .login-link {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Contenedor de carga -->
+  <div class="loader-container" id="loader">
+    <div class="loader"></div>
+  </div>
+
+  <div class="password-container">
+    <div class="password-card">
+      <div class="password-header">
+        <i class="mdi mdi-key-change password-icon"></i>
+        <h2>Crea tu nueva contraseña</h2>
+        <p>Ingresa y confirma tu nueva contraseña</p>
+      </div>
+      <form method="POST" id="formNuevaContrasena">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="nueva_password">Nueva contraseña</label>
+          <input type="password" name="nueva_password" id="nueva_password" class="form-control" placeholder="Mínimo 6 caracteres">
+          <i class="mdi mdi-eye-off password-toggle" id="togglePassword1"></i>
+          <div class="password-strength">
+            <div class="password-strength-bar" id="passwordStrength"></div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="confirmar_password">Confirmar contraseña</label>
+          <input type="password" name="confirmar_password" id="confirmar_password" class="form-control" placeholder="Repite tu contraseña">
+          <i class="mdi mdi-eye-off password-toggle" id="togglePassword2"></i>
+        </div>
+        
+        <button type="submit" class="btn-password" id="submitBtn">
+          <span class="btn-text"><i class="fa fa-key"></i> Cambiar contraseña</span>
+          <div class="loader"></div>
+        </button>
+        
+        <div class="login-link">
+          <a href="{% url 'login' %}"><i class="fa fa-arrow-left"></i> Volver al inicio de sesión</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <script>
+        Swal.fire({
+          title: `{% if message.tags == 'success' %}Éxito{% elif message.tags == 'error' %}Error{% elif message.tags == 'warning' %}Advertencia{% else %}Mensaje{% endif %}`,
+          text: "{{ message|escapejs }}",
+          icon: "{{ message.tags|default:'info' }}",
+          confirmButtonColor: '#4e73df'
+        });
+      </script>
+    {% endfor %}
+  {% endif %}
+
+  <script>
+    // Recargar la página si viene de cache
+    if (window.performance && window.performance.navigation.type === 2) {
+      window.location.reload();
+    }
+
+    // Toggle para mostrar/ocultar contraseña
+    function setupPasswordToggle(toggleId, inputId) {
+      const toggle = document.getElementById(toggleId);
+      const input = document.getElementById(inputId);
+      
+      toggle.addEventListener('click', function() {
+        const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+        input.setAttribute('type', type);
+        this.classList.toggle('mdi-eye-off');
+        this.classList.toggle('mdi-eye');
+      });
+    }
+
+    // Configurar toggles para ambos campos
+    setupPasswordToggle('togglePassword1', 'nueva_password');
+    setupPasswordToggle('togglePassword2', 'confirmar_password');
+
+    // Indicador de fortaleza de contraseña
+    document.getElementById('nueva_password').addEventListener('input', function() {
+      const password = this.value;
+      const strengthBar = document.getElementById('passwordStrength');
+      let strength = 0;
+      
+      // Verificar longitud
+      if (password.length > 5) strength += 20;
+      if (password.length > 8) strength += 20;
+      
+      // Verificar caracteres especiales
+      if (/[A-Z]/.test(password)) strength += 20;
+      if (/[0-9]/.test(password)) strength += 20;
+      if (/[^A-Za-z0-9]/.test(password)) strength += 20;
+      
+      // Actualizar barra
+      strengthBar.style.width = strength + '%';
+      
+      // Cambiar color según fortaleza
+      if (strength < 40) {
+        strengthBar.style.backgroundColor = '#e74c3c';
+      } else if (strength < 80) {
+        strengthBar.style.backgroundColor = '#f39c12';
+      } else {
+        strengthBar.style.backgroundColor = '#2ecc71';
+      }
+    });
+
+    // Validación del formulario
+    $("#formNuevaContrasena").validate({
+      rules: {
+        nueva_password: {
+          required: true,
+          minlength: 6,
+          maxlength: 50
+        },
+        confirmar_password: {
+          required: true,
+          equalTo: "#nueva_password"
+        }
+      },
+      messages: {
+        nueva_password: {
+          required: "Por favor ingresa una nueva contraseña",
+          minlength: "La contraseña debe tener al menos 6 caracteres",
+          maxlength: "La contraseña no puede exceder los 50 caracteres"
+        },
+        confirmar_password: {
+          required: "Por favor confirma tu contraseña",
+          equalTo: "Las contraseñas no coinciden"
+        }
+      },
+      errorElement: "span",
+      errorPlacement: function(error, element) {
+        error.addClass('error');
+        element.closest('.form-group').append(error);
+      },
+      highlight: function(element, errorClass, validClass) {
+        $(element).addClass('error');
+      },
+      unhighlight: function(element, errorClass, validClass) {
+        $(element).removeClass('error');
+      },
+      submitHandler: function(form) {
+        // Mostrar loader en el botón
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.classList.add('loading');
+        
+        // Mostrar loader global
+        $('#loader').css('display', 'flex');
+        
+        // Enviar formulario
+        form.submit();
+      }
+    });
+  </script>
+</body>
+</html>
