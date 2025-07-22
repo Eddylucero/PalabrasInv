@@ -1,0 +1,113 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+
+<!-- SweetAlert para eliminar ejemplo -->
+<script>
+  function confirmDelete(id) {
+    Swal.fire({
+      title: "CONFIRMACIÓN",
+      text: "¿Deseas eliminar este ejemplo de uso?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "eliminar/" + id;
+      }
+    });
+  }
+</script>
+
+<br>
+<h1 class="text-center">Listado de Ejemplos de Uso</h1>
+<hr>
+
+<div class="row mb-3 justify-content-end px-3">
+  <div class="col-auto">
+    <a href="{% url 'nuevoEjemplo' %}" class="btn btn-outline-primary">
+      <i class="fa fa-plus me-1"></i> Agregar Ejemplo
+    </a>
+  </div>
+</div>
+
+<div class="table-responsive px-3">
+  <table class="table table-bordered table-striped table-hover align-middle" id="tbl-ejemplos">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>#</th>
+        <th>Palabra</th>
+        <th>Texto</th>
+        <th>Autor</th>
+        <th>Fecha</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ejemplo in ejemplos %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ ejemplo.palabra.palabra }}</td>
+        <td>{{ ejemplo.texto|truncatewords:15 }}</td>
+        <td>{{ ejemplo.autor.username|default:"Anónimo" }}</td>
+        <td>{{ ejemplo.fecha|date:"d/m/Y H:i" }}</td>
+        <td class="text-center">
+          <a href="{% url 'editarEjemplo' ejemplo.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+            <i class="fa fa-pen"></i>
+          </a>
+          {% if perms.ejemplouso.delete_ejemplouso or ejemplo.autor == request.user %}
+          <a href="#" onclick="confirmDelete('{{ ejemplo.id }}')" class="btn btn-sm btn-outline-danger" title="Eliminar">
+            <i class="fa fa-trash"></i>
+          </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center text-muted">No hay ejemplos registrados.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- DataTable -->
+<script>
+  let table = new DataTable('#tbl-ejemplos', {
+    responsive: true,
+    layout: {
+      topStart: {
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+      }
+    },
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/2.3.2/i18n/es-ES.json',
+    },
+    columnDefs: [
+      { targets: [2, 4], orderable: false }, // texto, fecha
+      { targets: [2], searchable: false } // texto
+    ]
+  });
+</script>
+
+<!-- Responsivo para móviles -->
+<style>
+  @media (max-width: 576px) {
+    .table th, .table td {
+      font-size: 0.85rem;
+      padding: 6px;
+    }
+    .btn {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+    }
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+{% endblock %}

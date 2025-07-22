@@ -1,0 +1,150 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+
+<style>
+  .form-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+  }
+
+  .form-box {
+    width: 100%;
+    max-width: 700px;
+    padding: 2rem;
+    border-radius: 10px;
+    background-color: #2c3e50;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  }
+
+  .form-box .form-control {
+    color: #ecf0f1 !important;
+    background-color: #34495e;
+    border: 1px solid #3d566e;
+  }
+
+  .form-box .form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+  }
+
+  ::placeholder {
+    color: #bdc3c7 !important;
+    opacity: 0.7;
+  }
+
+  label {
+    color: #ecf0f1;
+    font-weight: 500;
+  }
+  
+  .error {
+    color: #e74c3c;
+    font-size: 0.85em;
+    margin-top: 0.25rem;
+  }
+  
+  .form-text {
+    color: #95a5a6 !important;
+  }
+  
+  .btn-outline-danger {
+    color: #e74c3c;
+    border-color: #e74c3c;
+  }
+  
+  .btn-outline-success {
+    color: #2ecc71;
+    border-color: #2ecc71;
+  }
+  
+  .btn-outline-danger:hover {
+    background-color: #e74c3c;
+    color: white;
+  }
+  
+  .btn-outline-success:hover {
+    background-color: #2ecc71;
+    color: white;
+  }
+  
+  h3 {
+    color: #ecf0f1;
+    margin-bottom: 1.5rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  }
+</style>
+
+<div class="form-wrap">
+  <form action="{% url 'guardarEjemplo' %}" method="post" class="forms-sample form-box" id="formGuardarEjemplo">
+    {% csrf_token %}
+    <h3 class="text-center mb-4">Agregar Nuevo Ejemplo de Uso</h3>
+
+    <div class="form-group mb-4">
+      <label for="palabra">Palabra</label>
+      <select class="form-control" id="palabra" name="palabra" required>
+        <option value="" selected disabled>Selecciona una palabra</option>
+        {% for palabra in palabras %}
+        <option value="{{ palabra.id }}">{{ palabra.palabra }}</option>
+        {% endfor %}
+      </select>
+      <small class="form-text">
+        <i class="fas fa-info-circle me-1"></i> Selecciona la palabra inventada
+      </small>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="texto">Ejemplo de uso</label>
+      <textarea class="form-control" id="texto" name="texto" 
+                rows="6" placeholder="Escribe un ejemplo creativo de cómo usar esta palabra..."
+                required></textarea>
+      <small class="form-text">
+        <i class="fas fa-info-circle me-1"></i> Mínimo 20 caracteres
+      </small>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="{% url 'listarEjemplos' %}" class="btn btn-outline-danger px-4">
+        <i class="fas fa-times me-2"></i> Cancelar
+      </a>
+      <button type="submit" class="btn btn-outline-success px-4 ms-3">
+        <i class="fas fa-save me-2"></i> Guardar
+      </button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Validación del formulario
+  $("#formGuardarEjemplo").validate({
+    rules: {
+      palabra: {
+        required: true
+      },
+      texto: {
+        required: true,
+        minlength: 20,
+        maxlength: 1000
+      }
+    },
+    messages: {
+      palabra: {
+        required: "Debes seleccionar una palabra"
+      },
+      texto: {
+        required: "Este campo es obligatorio",
+        minlength: "El ejemplo debe tener al menos 20 caracteres",
+        maxlength: "El ejemplo no puede exceder los 1000 caracteres"
+      }
+    },
+    errorElement: "span",
+    errorClass: "error",
+    errorPlacement: function(error, element) {
+      error.insertAfter(element);
+    }
+  });
+</script>
+
+{% endblock %}

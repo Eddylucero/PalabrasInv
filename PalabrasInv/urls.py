@@ -23,7 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('Aplicaciones.Usuario.urls')),
     path('PalabraInv/', include('Aplicaciones.PalabraInv.urls')),
-    #path('EjemploUsu/', include('Aplicaciones.EjemploUsu.urls')),
+    path('EjemploUsu/', include('Aplicaciones.EjemploUsu.urls')),
 ]
 
 if settings.DEBUG:

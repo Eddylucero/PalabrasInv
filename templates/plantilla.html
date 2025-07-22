@@ -46,23 +46,19 @@
 </head>
 
 <body>
-  <!--  Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
 
-    <!-- Sidebar Start -->
     <aside class="left-sidebar">
-      <!-- Sidebar scroll-->
       <div>
         <div class="brand-logo d-flex align-items-center justify-content-between">
-          <a href="/PalabrasInv/" class="text-nowrap logo-img">
+          <a href="/PalabraInv/" class="text-nowrap logo-img">
             <img src="{% static 'plantilla/Spike/src/assets/images/logos/logo.svg' %}" alt="" />
           </a>
           <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
             <i class="ti ti-x fs-8"></i>
           </div>
         </div>
-        <!-- Sidebar navigation-->
         <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
           <ul id="sidebarnav">
             <li class="nav-small-cap">
@@ -76,7 +72,7 @@
               </a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link primary-hover-bg" href="#" aria-expanded="false">
+              <a class="sidebar-link primary-hover-bg" href="/EjemploUsu/" aria-expanded="false">
                 <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
                 <span class="hide-menu">Ejemplo Uso</span>
               </a>
@@ -85,13 +81,9 @@
         </nav>
       </div>
     </aside>
-    <!--  Sidebar End -->
-    
-    <!--  Main wrapper -->
     <div class="body-wrapper">
       <div class="body-wrapper-inner">
         <div class="container-fluid">
-          <!--  Header Start -->
           <header class="app-header">
             <nav class="navbar navbar-expand-lg navbar-light">
               <ul class="navbar-nav">
@@ -103,6 +95,11 @@
               </ul>
               <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                 <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                  <li class="nav-item me-3">
+                    <button id="themeToggle" class="btn btn-sm btn-outline-secondary">
+                      <i class="fas fa-moon" id="themeIcon"></i>
+                    </button>
+                  </li>
                   <li class="nav-item dropdown">
                     <a class="nav-link" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                       aria-expanded="false">
@@ -121,8 +118,6 @@
               </div>
             </nav>
           </header>
-          <!--  Header End -->
-          
           {% block contenido %}
           {% endblock %}
           
@@ -135,11 +130,9 @@
     </div>
   </div>
 
-  <!-- Scripts locales -->
   <script src="{% static 'plantilla/Spike/src/assets/js/sidebarmenu.js' %}"></script>
   <script src="{% static 'plantilla/Spike/src/assets/js/app.min.js' %}"></script>
   
-  <!-- Iconify -->
   <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 
   <script>
@@ -196,5 +189,86 @@
       </script>
     {% endfor %}
   {% endif %}
+
+  <style>
+  /* Estilos para el modo claro */
+  body.light-mode {
+    background-color: #f8f9fa;
+    color: #212529;
+  }
+  
+  .light-mode .left-sidebar {
+    background-color: #ffffff;
+    box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .light-mode .sidebar-nav ul .sidebar-item .sidebar-link {
+    color: #495057;
+  }
+  
+  .light-mode .sidebar-nav ul .sidebar-item .sidebar-link:hover {
+    background-color: #f1f3f9;
+  }
+  
+  .light-mode .app-header {
+    background-color: #ffffff;
+    box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .light-mode .form-box {
+    background-color: #ffffff;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  }
+  
+  .light-mode .form-box .form-control {
+    color: #495057 !important;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+  }
+  
+  .light-mode label {
+    color: #495057;
+  }
+  
+  .light-mode .form-text {
+    color: #6c757d !important;
+  }
+</style>
+
+<script>
+  // Manejo del cambio de tema
+  document.addEventListener('DOMContentLoaded', function() {
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const body = document.body;
+    
+    // Verificar preferencia guardada
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+      body.classList.add('light-mode');
+      themeIcon.classList.replace('fa-moon', 'fa-sun');
+    }
+    
+    // Manejar el click del botón
+    themeToggle.addEventListener('click', function() {
+      if (body.classList.contains('light-mode')) {
+        body.classList.remove('light-mode');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.add('light-mode');
+        themeIcon.classList.replace('fa-moon', 'fa-sun');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+    
+    // Opcional: Detectar preferencia del sistema
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (prefersDark && !localStorage.getItem('theme')) {
+      body.classList.remove('light-mode');
+      themeIcon.classList.replace('fa-sun', 'fa-moon');
+    }
+  });
+</script>
 </body>
 </html>
