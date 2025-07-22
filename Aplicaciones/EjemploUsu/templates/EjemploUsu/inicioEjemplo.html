@@ -58,6 +58,9 @@
           <a href="{% url 'editarEjemplo' ejemplo.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
             <i class="fa fa-pen"></i>
           </a>
+          <a href="{% url 'envio_telegram' ejemplo.id %}" class="btn btn-sm btn-outline-info" title="Enviar mensaje al autor">
+            <i class="fab fa-telegram"></i>
+          </a>
           {% if perms.ejemplouso.delete_ejemplouso or ejemplo.autor == request.user %}
           <a href="#" onclick="confirmDelete('{{ ejemplo.id }}')" class="btn btn-sm btn-outline-danger" title="Eliminar">
             <i class="fa fa-trash"></i>
@@ -109,5 +112,25 @@
     }
   }
 </style>
+
+<script>
+// Manejar clic en botón de Telegram
+$(document).on('click', 'a[href^="/EjemploUsu/telegram/"]', function(e) {
+  e.preventDefault();
+  const url = $(this).attr('href');
+  
+  // Cargar el modal via AJAX
+  $.get(url, function(data) {
+    $('body').append(data);
+  }).fail(function() {
+    Swal.fire('Error', 'No se pudo cargar el formulario de Telegram', 'error');
+  });
+});
+
+// Limpiar el modal cuando se cierre
+$(document).on('hidden.bs.modal', '#telegramModal', function() {
+  $(this).remove();
+});
+</script>
 
 {% endblock %}

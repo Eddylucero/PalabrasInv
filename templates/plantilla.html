@@ -66,16 +66,44 @@
               <span class="hide-menu">Menú</span>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link primary-hover-bg" href="/PalabraInv/" aria-expanded="false">
+              <a class="sidebar-link has-arrow primary-hover-bg" href="javascript:void(0)" aria-expanded="false">
                 <iconify-icon icon="solar:document-text-line-duotone"></iconify-icon>
                 <span class="hide-menu">Palabras</span>
               </a>
+              <ul aria-expanded="false" class="collapse first-level">
+                <li class="sidebar-item">
+                  <a href="/PalabraInv/" class="sidebar-link">
+                    <iconify-icon icon="mdi:text-box-outline"></iconify-icon>
+                    <span class="hide-menu">Gestión de Palabras</span>
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a href="/PalabraInv/calendario/" class="sidebar-link">
+                    <iconify-icon icon="mdi:calendar-month-outline"></iconify-icon>
+                    <span class="hide-menu">Calendario</span>
+                  </a>
+                </li>
+              </ul>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link primary-hover-bg" href="/EjemploUsu/" aria-expanded="false">
+              <a class="sidebar-link has-arrow primary-hover-bg" href="javascript:void(0)" aria-expanded="false">
                 <iconify-icon icon="solar:settings-line-duotone"></iconify-icon>
                 <span class="hide-menu">Ejemplo Uso</span>
               </a>
+              <ul aria-expanded="false" class="collapse first-level">
+                <li class="sidebar-item">
+                  <a href="/EjemploUsu/" class="sidebar-link">
+                    <iconify-icon icon="mdi:format-list-bulleted"></iconify-icon>
+                    <span class="hide-menu">Gestión de Ejemplos</span>
+                  </a>
+                </li>
+                <li class="sidebar-item">
+                  <a href="{% url 'graficos_ejemplos' %}" class="sidebar-link">
+                    <iconify-icon icon="mdi:chart-bar"></iconify-icon>
+                    <span class="hide-menu">Gráfico de Uso</span>
+                  </a>
+                </li>
+              </ul>
             </li>
           </ul>
         </nav>
@@ -95,11 +123,22 @@
               </ul>
               <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
                 <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-                  <li class="nav-item me-3">
+                  <!-- Nombre de usuario - siempre en negro -->
+                  <li class="nav-item me-2">
+                    <span class="nav-link text-nowrap username-text">
+                      <i class="fas fa-user me-1"></i>
+                      {{ request.user.username }}
+                    </span>
+                  </li>
+                  
+                  <!-- Botón de cambio de tema -->
+                  <li class="nav-item me-2">
                     <button id="themeToggle" class="btn btn-sm btn-outline-secondary">
                       <i class="fas fa-moon" id="themeIcon"></i>
                     </button>
                   </li>
+                  
+                  <!-- Dropdown del perfil -->
                   <li class="nav-item dropdown">
                     <a class="nav-link" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                       aria-expanded="false">
@@ -191,84 +230,110 @@
   {% endif %}
 
   <style>
-  /* Estilos para el modo claro */
-  body.light-mode {
-    background-color: #f8f9fa;
-    color: #212529;
-  }
-  
-  .light-mode .left-sidebar {
-    background-color: #ffffff;
-    box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
-  }
-  
-  .light-mode .sidebar-nav ul .sidebar-item .sidebar-link {
-    color: #495057;
-  }
-  
-  .light-mode .sidebar-nav ul .sidebar-item .sidebar-link:hover {
-    background-color: #f1f3f9;
-  }
-  
-  .light-mode .app-header {
-    background-color: #ffffff;
-    box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
-  }
-  
-  .light-mode .form-box {
-    background-color: #ffffff;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-  }
-  
-  .light-mode .form-box .form-control {
-    color: #495057 !important;
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-  }
-  
-  .light-mode label {
-    color: #495057;
-  }
-  
-  .light-mode .form-text {
-    color: #6c757d !important;
-  }
-</style>
-
-<script>
-  // Manejo del cambio de tema
-  document.addEventListener('DOMContentLoaded', function() {
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const body = document.body;
-    
-    // Verificar preferencia guardada
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    if (savedTheme === 'light') {
-      body.classList.add('light-mode');
-      themeIcon.classList.replace('fa-moon', 'fa-sun');
+    /* Estilos para el modo claro */
+    body.light-mode {
+      background-color: #f8f9fa;
+      color: #212529;
     }
     
-    // Manejar el click del botón
-    themeToggle.addEventListener('click', function() {
-      if (body.classList.contains('light-mode')) {
-        body.classList.remove('light-mode');
-        themeIcon.classList.replace('fa-sun', 'fa-moon');
-        localStorage.setItem('theme', 'dark');
-      } else {
+    .light-mode .left-sidebar {
+      background-color: #ffffff;
+      box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .light-mode .sidebar-nav ul .sidebar-item .sidebar-link {
+      color: #495057;
+    }
+    
+    .light-mode .sidebar-nav ul .sidebar-item .sidebar-link:hover {
+      background-color: #f1f3f9;
+    }
+    
+    .light-mode .app-header {
+      background-color: #ffffff;
+      box-shadow: 1px 0 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .light-mode .form-box {
+      background-color: #ffffff;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    
+    .light-mode .form-box .form-control {
+      color: #495057 !important;
+      background-color: #f8f9fa;
+      border: 1px solid #ced4da;
+    }
+    
+    .light-mode label {
+      color: #495057;
+    }
+    
+    .light-mode .form-text {
+      color: #6c757d !important;
+    }
+
+    /* Estilos para el nombre de usuario - SIEMPRE EN NEGRO */
+    .username-text {
+      color: #000000 !important; /* Negro puro */
+    }
+
+    .navbar-nav .username-text {
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .navbar-nav .username-text i {
+      margin-right: 0.5rem;
+      color: inherit; /* Hereda el color del texto (negro) */
+    }
+
+    /* Asegurar que el color no cambie en ningún modo */
+    .light-mode .username-text,
+    .dark-mode .username-text {
+      color: #000000 !important;
+    }
+  </style>
+
+  <script>
+    // Manejo del cambio de tema
+    document.addEventListener('DOMContentLoaded', function() {
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const body = document.body;
+      
+      // Verificar preferencia guardada
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      if (savedTheme === 'light') {
         body.classList.add('light-mode');
         themeIcon.classList.replace('fa-moon', 'fa-sun');
-        localStorage.setItem('theme', 'light');
+      } else {
+        body.classList.add('dark-mode');
+      }
+      
+      // Manejar el click del botón
+      themeToggle.addEventListener('click', function() {
+        if (body.classList.contains('light-mode')) {
+          body.classList.remove('light-mode');
+          body.classList.add('dark-mode');
+          themeIcon.classList.replace('fa-sun', 'fa-moon');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          body.classList.remove('dark-mode');
+          body.classList.add('light-mode');
+          themeIcon.classList.replace('fa-moon', 'fa-sun');
+          localStorage.setItem('theme', 'light');
+        }
+      });
+      
+      // Opcional: Detectar preferencia del sistema
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (prefersDark && !localStorage.getItem('theme')) {
+        body.classList.add('dark-mode');
+        themeIcon.classList.replace('fa-sun', 'fa-moon');
       }
     });
-    
-    // Opcional: Detectar preferencia del sistema
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (prefersDark && !localStorage.getItem('theme')) {
-      body.classList.remove('light-mode');
-      themeIcon.classList.replace('fa-sun', 'fa-moon');
-    }
-  });
-</script>
+  </script>
 </body>
 </html>

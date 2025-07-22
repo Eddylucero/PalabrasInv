@@ -1,0 +1,52 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+
+<div class="container py-4 text-white">
+  <h3 class="text-center mb-4" style="color: #1e272e;">Calendario de Palabras Inventadas</h3>
+  <div id='calendar'></div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const calendarEl = document.getElementById('calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'es',
+      initialView: 'dayGridMonth',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,listWeek'
+      },
+      events: "{% url 'eventosPalabras' %}",
+      buttonText: {
+        today: 'Hoy',
+        month: 'Mes',
+        week: 'Semana',
+        day: 'Día',
+        list: 'Lista'
+      }
+    });
+    calendar.render();
+  });
+</script>
+
+<style>
+  #calendar {
+    padding: 20px;
+    background-color: #1e272e;
+    border-radius: 10px;
+    color: white;
+  }
+  .fc-toolbar-title {
+    color: white !important;
+  }
+  .fc-button {
+    background-color: #2c3e50 !important;
+    color: white !important;
+    border: none !important;
+  }
+</style>
+
+{% endblock %}

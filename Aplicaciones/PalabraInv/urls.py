@@ -8,4 +8,6 @@ urlpatterns = [
     path('eliminar/<int:id>/', views.eliminarPalabra, name='eliminarPalabra'),
     path('editar/<int:id>/', views.editarPalabra, name='editarPalabra'),
     path('actualizar/<int:id>/', views.actualizarPalabra, name='actualizarPalabra'),
+    path('calendario/', views.calendarioPalabras, name='calendarioPalabras'),
+    path('eventos/', views.eventosPalabras, name='eventosPalabras'),
 ]

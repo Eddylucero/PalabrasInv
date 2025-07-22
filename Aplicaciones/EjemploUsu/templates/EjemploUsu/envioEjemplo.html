@@ -1,0 +1,144 @@
+{% extends "plantilla.html" %}
+{% load static %}
+{% block contenido %}
+
+<div class="modal fade" id="telegramModal" tabindex="-1" aria-labelledby="telegramModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="telegramModalLabel">
+          <i class="fab fa-telegram me-2"></i> Enviar Mensaje al Autor
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formTelegramEjemplo">
+          <input type="hidden" id="ejemplo_id" value="{{ ejemplo.id }}">
+          
+          <div class="mb-3">
+            <label for="tipo_mensaje" class="form-label">Tipo de mensaje</label>
+            <select class="form-select" id="tipo_mensaje" required>
+              <option value="" selected disabled>Seleccione un tipo</option>
+              {% for tipo in tipos_mensaje %}
+              <option value="{{ tipo }}">{{ tipo }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="mb-3">
+            <label for="contenido" class="form-label">Contenido principal</label>
+            <textarea class="form-control" id="contenido" rows="4" 
+                      placeholder="Escribe aquí el contenido nuevo o modificaciones..." required></textarea>
+          </div>
+          
+          <div class="mb-3">
+            <label for="mensaje_adicional" class="form-label">Comentarios adicionales</label>
+            <textarea class="form-control" id="mensaje_adicional" rows="3"
+                      placeholder="Observaciones, sugerencias, etc. (opcional)"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="fas fa-times me-1"></i> Cancelar
+        </button>
+        <button type="button" class="btn btn-primary" id="btnEnviarTelegram">
+          <i class="fab fa-telegram me-1"></i> Enviar Mensaje
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  // Mostrar modal automáticamente
+  var telegramModal = new bootstrap.Modal(document.getElementById('telegramModal'));
+  telegramModal.show();
+  
+  // Manejar envío
+  $('#btnEnviarTelegram').click(function() {
+    const form = $('#formTelegramEjemplo');
+    if (!form[0].checkValidity()) {
+      form.addClass('was-validated');
+      return;
+    }
+    
+    const btn = $(this);
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i> Enviando...');
+    
+    $.ajax({
+      url: "{% url 'procesar_mensaje_telegram' %}",
+      type: 'POST',
+      data: JSON.stringify({
+        ejemplo_id: $('#ejemplo_id').val(),
+        tipo_mensaje: $('#tipo_mensaje').val(),
+        contenido: $('#contenido').val(),
+        mensaje_adicional: $('#mensaje_adicional').val()
+      }),
+      contentType: 'application/json',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      success: function(response) {
+        telegramModal.hide();
+        if (response.status === 'success') {
+          Swal.fire({
+            title: 'Éxito',
+            text: response.message,
+            icon: 'success',
+            timer: 3000
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: response.message,
+            icon: 'error'
+          });
+        }
+      },
+      error: function(xhr) {
+        let errorMsg = 'Error al enviar el mensaje';
+        try {
+          const response = JSON.parse(xhr.responseText);
+          errorMsg = response.message || errorMsg;
+          
+          if (response.message && response.message.includes('no tiene un chat de Telegram vinculado')) {
+            Swal.fire({
+              title: 'Chat no vinculado',
+              text: response.message,
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Ver instrucciones',
+              cancelButtonText: 'Cerrar',
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                // Abrir en la misma pestaña
+                window.location.href = "{% url 'ayuda_telegram' %}";
+              }
+            });
+            return;
+          }
+        } catch (e) {
+          console.error('Error parsing response:', e);
+        }
+        Swal.fire('Error', errorMsg, 'error');
+      },
+      complete: function() {
+        btn.prop('disabled', false).html('<i class="fab fa-telegram me-1"></i> Enviar Mensaje');
+      }
+    });
+  });
+  
+  // Cerrar modal al hacer clic fuera de él
+  $('#telegramModal').on('click', function(e) {
+    if ($(e.target).hasClass('modal')) {
+      telegramModal.hide();
+    }
+  });
+});
+</script>
+
+{% endblock %}

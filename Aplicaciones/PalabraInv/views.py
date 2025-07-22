@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import PalabraInventada
 from django.contrib.auth.decorators import permission_required, login_required
+from django.http import JsonResponse
 
 # Listar palabras
 def listarPalabras(request):
@@ -71,3 +72,19 @@ def actualizarPalabra(request, id):
         return redirect('listarPalabras')
 
     return redirect('listarPalabras')
+
+def calendarioPalabras(request):
+    return render(request, "PalabraInv/calendario.html")
+
+def eventosPalabras(request):
+    palabras = PalabraInventada.objects.select_related('creador').all()
+    eventos = []
+
+    for palabra in palabras:
+        eventos.append({
+            'title': f"{palabra.palabra} ({palabra.creador.username})",
+            'start': palabra.fecha_creacion.strftime('%Y-%m-%d'),
+            'color': '#3498db'  # color base
+        })
+
+    return JsonResponse(eventos, safe=False)

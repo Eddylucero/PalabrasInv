@@ -1,0 +1,82 @@
+{% extends "plantilla.html" %}
+{% block contenido %}
+
+<div class="container py-5">
+  <h1 class="text-center mb-5">Estadísticas de Ejemplos de Uso</h1>
+
+  <!-- Gráfico simplificado -->
+  <div class="card mb-5 shadow">
+    <div class="card-header bg-primary text-white">
+      <h2 class="text-center mb-0">Palabras más utilizadas en ejemplos</h2>
+    </div>
+    <div class="card-body">
+      <canvas id="graficoPalabras" height="300"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Incluir Chart.js desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  fetch("{% url 'datos_graficos_ejemplos' %}")
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Error al obtener datos: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      // Verificar si hay un error en la respuesta
+      if (data.error) {
+        console.error('Error del servidor:', data.error);
+        alert('Error al cargar los datos: ' + data.error);
+        return;
+      }
+
+      // Gráfico de palabras más usadas (simplificado)
+      new Chart(document.getElementById('graficoPalabras'), {
+        type: 'bar',
+        data: {
+          labels: data.labels,
+          datasets: [{
+            label: 'Número de ejemplos',
+            data: data.data,
+            backgroundColor: data.colors,
+            borderColor: data.colors.map(color => color.replace('0.6', '1')),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.parsed.y + ' ejemplos';
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1,
+                precision: 0
+              }
+            }
+          }
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al cargar los datos. Por favor recarga la página.');
+    });
+});
+</script>
+
+{% endblock %}
