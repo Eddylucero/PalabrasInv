@@ -9,9 +9,40 @@
   <link rel="shortcut icon" type="image/png" href="{% static 'plantilla/Spike/src/assets/images/logos/favicon.png' %}" />
   <link rel="stylesheet" href="{% static 'plantilla/Spike/src/assets/css/styles.min.css' %}" />
 
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.21.0/dist/jquery.validate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/localization/messages_es.min.js"></script>
 
-  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/2.3.2/css/dataTables.dataTables.min.css">
+  <script src="https://cdn.datatables.net/2.3.2/js/dataTables.min.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.3/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.html5.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/3.2.3/js/buttons.print.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.3/css/buttons.dataTables.min.css">
+    
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" />
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.5.0/css/fileinput.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.5.0/js/fileinput.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.5.0/js/locales/es.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/smoothness/jquery-ui.css">
+
 </head>
 
 <body>
@@ -104,9 +135,7 @@
     </div>
   </div>
 
-  <!-- Scripts al final del body para asegurar que el DOM esté cargado -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Scripts locales -->
   <script src="{% static 'plantilla/Spike/src/assets/js/sidebarmenu.js' %}"></script>
   <script src="{% static 'plantilla/Spike/src/assets/js/app.min.js' %}"></script>
   
@@ -114,16 +143,18 @@
   <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 
   <script>
-    // Mostrar mensaje de bienvenida al cargar la página
+    // Mostrar mensaje de bienvenida solo una vez por sesión
     document.addEventListener('DOMContentLoaded', function() {
-      // Mensaje de bienvenida
-      Swal.fire({
-        title: 'Bienvenido/a',
-        text: '{{ user.username }}',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false
-      });
+      if(!sessionStorage.getItem('bienvenidaMostrada')) {
+        Swal.fire({
+          title: 'Bienvenido/a',
+          text: '{{ user.username }}',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        sessionStorage.setItem('bienvenidaMostrada', 'true');
+      }
       
       // Manejar el cierre de sesión
       document.getElementById('logoutBtn').addEventListener('click', function() {
@@ -138,8 +169,8 @@
           cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
-            // Aquí deberías hacer una petición a tu backend para cerrar sesión
-            // y luego redirigir
+            // Limpiar el indicador de bienvenida al cerrar sesión
+            sessionStorage.removeItem('bienvenidaMostrada');
             window.location.href = "/"; // Redirigir a la raíz
           }
         });

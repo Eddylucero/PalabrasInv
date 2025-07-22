@@ -15,7 +15,7 @@
     max-width: 700px;
     padding: 2rem;
     border-radius: 10px;
-    background-color: #2c3e50; /* Fondo azul oscuro */
+    background-color: #2c3e50;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
   }
 
@@ -75,17 +75,26 @@
     margin-bottom: 1.5rem;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
   }
+
+  .current-image {
+    max-width: 200px;
+    max-height: 200px;
+    display: block;
+    margin: 10px 0;
+    border-radius: 5px;
+  }
 </style>
 
 <div class="form-wrap">
-  <form action="{% url 'guardarPalabra' %}" method="post" enctype="multipart/form-data" class="forms-sample form-box" id="formGuardarPalabra">
+  <form action="{% url 'actualizarPalabra' palabra.id %}" method="post" enctype="multipart/form-data" class="forms-sample form-box" id="formEditarPalabra">
     {% csrf_token %}
-    <h3 class="text-center mb-4">Agregar Nueva Palabra Inventada</h3>
+    <h3 class="text-center mb-4">Editar Palabra Inventada</h3>
 
     <div class="form-group mb-4">
       <label for="palabra">Palabra inventada</label>
       <input type="text" class="form-control" id="palabra" name="palabra" 
-             placeholder="Ej. 'Chirimbolo'" required
+             value="{{ palabra.palabra }}"
+             placeholder="Ej. 'Chirimbolo'"
              pattern="[A-Za-záéíóúñÁÉÍÓÚÑ\s]{3,50}">
       <small class="form-text">
         <i class="fas fa-info-circle me-1"></i> Solo letras (3-50 caracteres)
@@ -95,12 +104,27 @@
     <div class="form-group mb-4">
       <label for="significado">Significado</label>
       <textarea class="form-control" id="significado" name="significado" 
-                rows="4" placeholder="Explica el significado creativo..." required></textarea>
+                rows="4" placeholder="Explica el significado creativo...">{{ palabra.significado }}</textarea>
     </div>
 
     <div class="form-group mb-4">
-      <label for="imagen">Imagen representativa (Opcional)</label>
+      <label for="imagen">Imagen representativa</label>
+      
+      {% if palabra.imagen %}
+        <div class="mb-3">
+          <p class="text-white">Imagen actual:</p>
+          <img src="{{ palabra.imagen.url }}" alt="{{ palabra.palabra }}" class="current-image">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="eliminar_imagen" name="eliminar_imagen">
+            <label class="form-check-label text-white" for="eliminar_imagen">
+              Eliminar imagen actual
+            </label>
+          </div>
+        </div>
+      {% endif %}
+      
       <input type="file" class="form-control file-input" id="imagen" name="imagen" accept="image/*">
+      <small class="form-text">Deja vacío para mantener la imagen actual</small>
     </div>
 
     <div class="text-center mt-4">
@@ -108,7 +132,7 @@
         <i class="fas fa-times me-2"></i> Cancelar
       </a>
       <button type="submit" class="btn btn-outline-success px-4 ms-3">
-        <i class="fas fa-save me-2"></i> Guardar
+        <i class="fas fa-save me-2"></i> Actualizar
       </button>
     </div>
   </form>
@@ -140,7 +164,7 @@
 
 <script>
   // Validación del formulario
-  $("#formGuardarPalabra").validate({
+  $("#formEditarPalabra").validate({
     rules: {
       palabra: {
         required: true,

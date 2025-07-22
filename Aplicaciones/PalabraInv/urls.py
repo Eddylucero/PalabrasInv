@@ -2,5 +2,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.listarPalabras, name='listarPalabras'),
+    path('nueva/', views.nuevaPalabra, name='nuevaPalabra'),  # Elimina el espacio antes de 'nueva/'
+    path('guardar/', views.guardarPalabra, name='guardarPalabra'),
+    path('eliminar/<int:id>/', views.eliminarPalabra, name='eliminarPalabra'),
+    path('editar/<int:id>/', views.editarPalabra, name='editarPalabra'),
+    path('actualizar/<int:id>/', views.actualizarPalabra, name='actualizarPalabra'),
 ]

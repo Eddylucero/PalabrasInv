@@ -2,6 +2,129 @@
 {% load static %}
 {% block contenido %}
 
-<h1>Si funciona la plantilla</h1>
+<!-- SweetAlert para confirmación de eliminación -->
+<script>
+  function confirmDelete(id) {
+    Swal.fire({
+      title: "CONFIRMACIÓN",
+      text: "¿Está seguro de eliminar esta palabra inventada?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      customClass: {
+        popup: 'custom-swal-popup',
+        title: 'custom-swal-title',
+        icon: 'custom-swal-icon',
+        htmlContainer: 'custom-swal-html'
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "eliminarPalabra/" + id;
+      }
+    });
+  }
+</script>
+
+<br>
+<h1 class="text-center">Listado de Palabras Inventadas</h1>
+<hr>
+
+<div class="row mb-3 justify-content-end px-3">
+  <div class="col-auto">
+    <a href="{% url 'nuevaPalabra' %}" class="btn btn-outline-success">
+      <i class="fa fa-plus me-1"></i> Agregar Palabra
+    </a>
+  </div>
+</div>
+
+<!-- Tabla responsiva -->
+<div class="table-responsive px-3">
+  <table class="table table-bordered table-striped table-hover align-middle" id="tbl-palabras">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>#</th>
+        <th>Palabra</th>
+        <th>Significado</th>
+        <th>Imagen</th>
+        <th>Creador</th>
+        <th>Fecha Creación</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for palabra in palabras %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>{{ palabra.palabra }}</td>
+        <td>{{ palabra.significado|truncatewords:10 }}</td>
+        <td class="text-center">
+          {% if palabra.imagen %}
+            <img src="{{ palabra.imagen.url }}" alt="{{ palabra.palabra }}" style="max-height: 50px;">
+          {% else %}
+            <span class="text-muted">Sin imagen</span>
+          {% endif %}
+        </td>
+        <td>{{ palabra.creador.username }}</td>
+        <td>{{ palabra.fecha_creacion|date:"d/m/Y H:i" }}</td>
+        <td class="text-center">
+          <a href="{% url 'editarPalabra' palabra.id %}" class="btn btn-sm btn-outline-warning" title="Editar">
+            <i class="fa fa-pen"></i>
+          </a>
+          {% if perms.palabras.delete_palabrainventada or palabra.creador == request.user %}
+          <a href="#" onclick="confirmDelete('{{ palabra.id }}')" class="btn btn-sm btn-outline-danger" title="Eliminar">
+            <i class="fa fa-trash"></i>
+          </a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="text-center text-muted">No hay palabras inventadas registradas.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  let table = new DataTable('#tbl-palabras', {
+    responsive: true,
+    layout: {
+      topStart: {
+        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+      }
+    },
+    language: {
+      url: 'https://cdn.datatables.net/plug-ins/2.3.2/i18n/es-ES.json',
+    },
+    columnDefs: [
+      { targets: [2, 5], orderable: false }, // Deshabilitar ordenación para significado y fecha
+      { targets: [3], searchable: false } // Deshabilitar búsqueda para imágenes
+    ]
+  });
+</script>
+
+<!-- Ajuste visual adicional para móvil -->
+<style>
+  @media (max-width: 576px) {
+    .table th, .table td {
+      font-size: 0.85rem;
+      padding: 6px;
+    }
+    .btn {
+      font-size: 0.75rem;
+      padding: 4px 8px;
+    }
+    h1 {
+      font-size: 1.5rem;
+    }
+    #tbl-palabras img {
+      max-height: 30px;
+    }
+  }
+</style>
 
 {% endblock %}
